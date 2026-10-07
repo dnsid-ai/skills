@@ -1,0 +1,7 @@
+{
+  "name": "dnsid-skills",
+  "version": "0.1.0",
+  "description": "Agent skills for building with DNSid: the protocol, the dnsid CLI and DNSid Local, the Go/TypeScript/Python SDKs, and official integrations.",
+  "homepage": "https://docs.dnsid.ai",
+  "license": "Apache-2.0"
+}

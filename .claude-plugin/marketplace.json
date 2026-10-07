@@ -1,0 +1,11 @@
+{
+  "name": "dnsid",
+  "owner": { "name": "DNSid" },
+  "plugins": [
+    {
+      "name": "dnsid-skills",
+      "source": "./",
+      "description": "Agent skills for building with DNSid: protocol, CLI and DNSid Local, SDKs, and integrations."
+    }
+  ]
+}
