@@ -24,3 +24,16 @@ frameworks.
 **Other agents:** run `npx skills add dnsid-ai/skills`, or copy the folders
 under `skills/` into your agent's skills directory (for example
 `.claude/skills/` in a project).
+
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[code of conduct](CODE_OF_CONDUCT.md). Report security issues privately per
+[SECURITY.md](SECURITY.md), not in a public issue.
+
+## License
+
+The skill text (Markdown files) is licensed under
+[CC BY 4.0](LICENSE-docs.txt). Code, including code blocks embedded in
+Markdown, and the plugin manifests are licensed under the
+[Apache License 2.0](LICENSE).
