@@ -1,0 +1,41 @@
+# A2A AgentSkill (agent card `skills[]` entry). `tool` is the callable's JSON Schema
+# contract; it is not an A2A field, so A2A clients that do not know it ignore it.
+id: pr-verify-signed-commits
+name: Verify signed commits
+description: >-
+  List the commits in a GitHub pull request that GitHub does not mark as
+  verified (GPG, SSH or S/MIME signature), with the reason for each and the
+  steps to re-sign them. Read-only.
+tags: [github, pull-request, commit-signing, review]
+examples:
+  - Are all the commits in dnsid-ai/skills#12 signed?
+  - Why is the signed-commits rule blocking my PR?
+inputModes: [application/json]
+outputModes: [application/json]
+tool:
+  name: verify_signed_commits
+  entrypoint: main.py:verify_signed_commits
+  inputSchema:
+    type: object
+    required: [pr_number, repo]
+    properties:
+      pr_number: {type: integer, description: Pull request number}
+      repo: {type: string, description: "owner/name, e.g. dnsid-ai/skills"}
+  outputSchema:
+    type: object
+    required: [ok, unsigned_commits, remediation]
+    properties:
+      repo: {type: string}
+      pr_number: {type: integer}
+      ok: {type: boolean, description: True when every commit is verified}
+      total_commits: {type: integer}
+      unsigned_commits:
+        type: array
+        items:
+          type: object
+          properties:
+            sha: {type: string}
+            reason: {type: string, description: "GitHub verification reason, e.g. unsigned, unknown_key"}
+            subject: {type: string}
+            author: {type: string}
+      remediation: {type: array, items: {type: string}, description: Empty when ok}

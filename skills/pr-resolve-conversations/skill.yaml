@@ -1,0 +1,51 @@
+# A2A AgentSkill (agent card `skills[]` entry). `tool` is the callable's JSON Schema
+# contract; it is not an A2A field, so A2A clients that do not know it ignore it.
+id: pr-resolve-conversations
+name: Resolve PR conversations
+description: >-
+  List a GitHub pull request's review threads, resolve the simple ones
+  (outdated: the commented code has changed since) when allowed, and flag the
+  unresolved threads that still need a person. Writes to GitHub only when
+  auto_resolve_simple is true.
+tags: [github, pull-request, review, conversations]
+examples:
+  - Which review conversations are still open on dnsid-ai/skills#12?
+  - Resolve the outdated threads on PR 12 and tell me what is left.
+inputModes: [application/json]
+outputModes: [application/json]
+tool:
+  name: resolve_conversations
+  entrypoint: main.py:resolve_conversations
+  inputSchema:
+    type: object
+    required: [pr_number, repo]
+    properties:
+      pr_number: {type: integer, description: Pull request number}
+      repo: {type: string, description: "owner/name, e.g. dnsid-ai/skills"}
+      auto_resolve_simple:
+        type: boolean
+        default: true
+        description: Resolve unresolved threads whose code has changed since the comment
+  outputSchema:
+    type: object
+    required: [ok, resolved, unresolved, needs_attention]
+    properties:
+      repo: {type: string}
+      pr_number: {type: integer}
+      ok: {type: boolean, description: True when no thread is left unresolved}
+      total_threads: {type: integer}
+      already_resolved: {type: array, items: {$ref: "#/$defs/thread"}}
+      resolved: {type: array, items: {$ref: "#/$defs/thread"}, description: Resolved by this call}
+      unresolved: {type: array, items: {$ref: "#/$defs/thread"}}
+      needs_attention: {type: array, items: {$ref: "#/$defs/thread"}, description: Unresolved and not outdated}
+    $defs:
+      thread:
+        type: object
+        properties:
+          id: {type: string}
+          path: {type: string}
+          line: {type: [integer, "null"]}
+          author: {type: string}
+          first_comment: {type: string}
+          url: {type: string}
+          outdated: {type: boolean}

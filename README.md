@@ -12,6 +12,16 @@ frameworks.
 | [`dnsid-sdk`](skills/dnsid-sdk/SKILL.md) | Go, TypeScript, and Python code: verifying peers, protecting HTTP APIs, signing requests, tokens, log trust, and keys |
 | [`dnsid-integrations`](skills/dnsid-integrations/SKILL.md) | The Claude Agent SDK plugin, A2A, LangGraph, MCP, OIDC gateways, edge, and building a new integration |
 
+PR management tools. Each is a Python function an agent calls, with an A2A
+skill definition and JSON Schema contract in `skill.yaml`; they use the `gh`
+CLI and its auth.
+
+| Skill | Tool |
+|---|---|
+| [`pr-verify-signed-commits`](skills/pr-verify-signed-commits/README.md) | `verify_signed_commits(pr_number, repo)`: the PR's unverified commits, with how to re-sign them |
+| [`pr-resolve-conversations`](skills/pr-resolve-conversations/README.md) | `resolve_conversations(pr_number, repo, auto_resolve_simple=True)`: resolves outdated review threads, flags the rest |
+| [`pr-verify-issue-linked`](skills/pr-verify-issue-linked/README.md) | `verify_issue_linked(pr_number, repo, add_label=None)`: checks the PR links open issues, optionally labels them |
+
 ## Install
 
 **Claude Code:**

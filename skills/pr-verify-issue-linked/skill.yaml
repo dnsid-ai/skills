@@ -1,0 +1,39 @@
+# A2A AgentSkill (agent card `skills[]` entry). `tool` is the callable's JSON Schema
+# contract; it is not an A2A field, so A2A clients that do not know it ignore it.
+id: pr-verify-issue-linked
+name: Verify linked issue
+description: >-
+  Check that a GitHub pull request's body links at least one issue with
+  closes/fixes/resolves/refs #N (or owner/repo#N), and that every linked issue
+  exists and is open. Optionally adds a label such as "in-progress" to the
+  linked issues, only when every link is valid.
+tags: [github, pull-request, issues, review]
+examples:
+  - Does dnsid-ai/skills#12 link an open issue?
+  - Check PR 12's issue link and label the issue in-progress.
+inputModes: [application/json]
+outputModes: [application/json]
+tool:
+  name: verify_issue_linked
+  entrypoint: main.py:verify_issue_linked
+  inputSchema:
+    type: object
+    required: [pr_number, repo]
+    properties:
+      pr_number: {type: integer, description: Pull request number}
+      repo: {type: string, description: "owner/name, e.g. dnsid-ai/skills"}
+      add_label:
+        type: [string, "null"]
+        default: null
+        description: Label to add to each linked issue when all links are valid, e.g. in-progress
+  outputSchema:
+    type: object
+    required: [ok, linked_issues, errors]
+    properties:
+      repo: {type: string}
+      pr_number: {type: integer}
+      ok: {type: boolean, description: True when at least one issue is linked and all are open}
+      linked_issues: {type: array, items: {type: string}, description: "owner/repo#N"}
+      errors: {type: array, items: {type: string}}
+      labeled: {type: array, items: {type: string}}
+      remediation: {type: array, items: {type: string}, description: Empty when ok}
