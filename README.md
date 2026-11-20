@@ -11,6 +11,7 @@ frameworks.
 | [`dnsid-cli`](skills/dnsid-cli/SKILL.md) | Installing `dnsid`, running DNSid Local, inspecting and verifying records, and troubleshooting |
 | [`dnsid-sdk`](skills/dnsid-sdk/SKILL.md) | Go, TypeScript, and Python code: verifying peers, protecting HTTP APIs, signing requests, tokens, log trust, and keys |
 | [`dnsid-integrations`](skills/dnsid-integrations/SKILL.md) | The Claude Agent SDK plugin, A2A, LangGraph, MCP, OIDC gateways, edge, and building a new integration |
+| [`dnsid-spiffe-spire`](skills/dnsid-spiffe-spire/SKILL.md) | Gating SPIFFE/SPIRE federation between organizations on DNSid: pinned peers, signed bundle bindings, fresh lifecycle evidence, and withdrawal on revocation |
 
 ## Install
 
