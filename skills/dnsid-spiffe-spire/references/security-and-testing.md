@@ -41,7 +41,8 @@ the three layers separate in code, logs, and test assertions.
    cause an outage. It cannot cause a trust downgrade once continuity anchors exist.
 9. **Single witness and no DNSSEC** in a local setup; the status URL is served by the registry
    (delegated outside `gi`).
-10. **Rollback and fork detection against a live log is not demonstrated** by recipe 16.
+10. **Fork detection against a live log is not demonstrated** by recipe 16. Rollback (a smaller
+    tree) was demonstrated live; a fork (same size, different root) was not.
 11. **Only the directions you gated are gated.** In the recipe, the reverse direction is standard
     SPIFFE federation.
 
@@ -78,8 +79,8 @@ None of these is built in the reference. Recommend them and do not claim them.
 
 ## What recipe 16 demonstrates, and what it does not
 
-**Demonstrated live** (development checkout, 2026-11-19/20; recipe `architecture.md`, "Validation
-status"):
+**Demonstrated live** (recipe `architecture.md`, "Validation status"; macOS, Docker Desktop,
+`linux/amd64` images under emulation):
 
 - Act 1: internal mTLS works; cross-domain fails at the SPIFFE layer; the controller holds.
 - Act 2: ALLOW on the controller's own cycle, with full evidence; the checkpoint persisted; the
@@ -88,10 +89,15 @@ status"):
 - Act 3: revocation → DENY WITHDRAWN on its own; new handshakes fail; the established session
   continues; internal mTLS is unaffected.
 - A `make stop` / `make bootstrap` resume with the signer, pin, and store preserved.
-- 573 offline tests, including restart safety, error mapping, and the store.
+- A clean clone: `make bootstrap`, `make verify`, `make clean`, `make run`, `make clean`, with every
+  check passing. Cleanup removed only that checkout's resources.
+- Checkpoint rollback: after accepting size 2, the controller rejected the older size-1 checkpoint
+  with `DENY WITHDRAWN LOG_INCONSISTENT` on its first cycle, kept size 2 in its store, and withdrew
+  the bundle. New cross-domain handshakes failed, and internal mTLS kept working.
+- 646 offline tests, including restart safety, error mapping, the store, and per-checkout isolation.
 
-**Not demonstrated:** a clean-clone `make verify`; rollback or fork detection against real signed
-checkpoints; CA rotation; DNSid key rotation; mutual gating; several peers; Pattern B; hosted
+**Not demonstrated:** fork detection (same size, different root) against a live log; Linux CI;
+CA rotation; DNSid key rotation; mutual gating; several peers; Pattern B; hosted
 (non-local) DNSid; Kubernetes; HA. In the user's environment, every test is **pending** until it has
 run there.
 

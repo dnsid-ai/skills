@@ -72,12 +72,17 @@ withdrawal. Point the user at its files instead of copying them:
 | Bootstrap and continuity fetch | `src/dnsidfed/bundle.py` |
 | Durable trusted-checkpoint store | `src/dnsidfed/checkpoints.py` |
 | Signer, pin, and resolver handling on DNSid Local | `scripts/identity.py`, `scripts/bootstrap.sh` |
+| Per-checkout isolation, ownership checks, and cleanup | `scripts/paths.py`, `scripts/cleanup.py` |
 | The three acts as assertions | `verify/verify.sh` |
 
 Things to tell the user before they run it:
 
-- It needs host port 443 and builds four images. Its `make clean` refuses to delete checkpoint
-  history without `CONFIRM=delete-checkpoint-history`, and `make stop` keeps all state.
+- It needs host port 443 and builds four images. Each checkout runs as its own Compose project,
+  but only one full stack can run per host because port 443 is fixed. The other host ports can be
+  changed with `make` variables, which are validated.
+- `make stop` keeps all state. `make clean` refuses to delete checkpoint history without
+  `CONFIRM=delete-checkpoint-history`, and refuses outright if the project's containers belong to
+  another checkout.
 - Act 3 permanently revokes the signer, and the signer is never replaced automatically, so the full
   lifecycle runs once per environment. A fresh clone repeats it.
 - Until the PR merges, treat the recipe as under review, and quote only behavior its README or
@@ -121,7 +126,7 @@ risk and stop for an explicit decision.
 10. **Never weaken verification to pass a test, and never overclaim.** Do not stretch freshness,
     grace, or statement lifetime (a longer lifetime also widens the window in which an old
     statement can be replayed), skip the log check, or reuse a verifier. Report what actually
-    ran. State unvalidated behavior as unvalidated: live rollback detection, CA rotation, mutual
+    ran. State unvalidated behavior as unvalidated: live fork detection, CA rotation, mutual
     gating, several peers, Pattern B.
 11. **Protect secrets.** Never print, log, or commit DNSid private keys, registry API keys, SPIRE
     join tokens, admin tokens, or controller state that holds them. Give the publisher an

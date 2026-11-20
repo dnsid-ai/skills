@@ -86,6 +86,14 @@ A restart must resume the same trust, never start a new trust history:
   exactly. Never overwrite or delete an unexpected entry to make a start succeed. Capture the whole
   lookup output before matching it: `spire-server … | grep -q` under `pipefail` can report a present
   entry as absent.
+- **Isolate each deployment and check ownership before acting.** Recipe 16 runs every checkout as
+  its own Compose project, named from the checkout's path, so containers, volumes, networks and
+  image tags are never shared. Before anything that creates, stops or deletes resources, it reads
+  the containers' Compose working-directory labels, running and stopped. It refuses if any belong
+  to another checkout, if a label is missing, or if Docker cannot be queried. Its cleanup also
+  refuses volumes left without containers unless the project name is provably this checkout's own,
+  and it never removes the built images. Apply the same rule to any automation you write: never
+  stop, recreate, or delete resources you cannot attribute to this deployment.
 - **Containers on a recreated network:** `dnsid local down`/`up` recreates the registry's Docker
   network under the same name with a new ID. A stopped controller container then cannot start.
   Recreate only that container, and only when ownership is confirmed and its state is

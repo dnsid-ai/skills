@@ -90,10 +90,15 @@ why):
 
 Limits to state: anyone who can write the state directory can delete the store and its journal
 (which looks like a fresh install) or restore an older copy while the controller is stopped. The
-first checkpoint for each log is trusted on first use. **Recipe 16 has not demonstrated rollback or
-fork detection against real signed checkpoints from a live log.** Its offline tests cover the store
-and how its errors are handled. Do not describe a deployment as rollback-protected until that is
-tested.
+first checkpoint for each log is trusted on first use.
+
+What has been shown live: in a disposable recipe 16 checkout, the controller accepted checkpoint
+size 2. The local registry was then restored to an older log state and served the validly signed
+size-1 checkpoint. On its first cycle afterwards the controller recorded `DENY WITHDRAWN
+LOG_INCONSISTENT` ("tree size regressed (1 < trusted 2)") and withdrew the bundle. Its store kept
+size 2. That exercises the SDK's tree-size regression check. **A fork (same size, different root),
+or a log that grows inconsistently, has not been demonstrated live**; only offline tests cover
+those cases. Say exactly which of these a user's own deployment has tested.
 
 ## Log trust policy, freshness, and skew
 
